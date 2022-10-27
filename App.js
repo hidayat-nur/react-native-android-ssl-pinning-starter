@@ -6,27 +6,52 @@
  * @flow strict-local
  */
 import React from 'react';
+import {fetch} from 'react-native-ssl-pinning';
 
 import {TouchableOpacity, StyleSheet, Text, View} from 'react-native';
 
 const App = () => {
-  const fetchData = () => {
-    console.log('fetching data');
+  const fetchDataInValid = () => {
+    fetch('https://jsonplaceholder.typicode.com/posts/1', {
+      method: 'GET',
+      timeoutInterval: 10000,
+      sslPinning: {
+        certs: ['expcert'],
+      },
+    })
+      .then(response => {
+        console.log(JSON.stringify(response.bodyString, null, '\t'));
+      })
+      .catch(err => {
+        console.log(`error: ${err}`);
+      });
   };
 
-  const secureFetchData = () => {
-    console.log('fetching secured data');
+  const fetchDataValid = () => {
+    fetch('https://jsonplaceholder.typicode.com/posts/2', {
+      method: 'GET',
+      timeoutInterval: 10000,
+      sslPinning: {
+        certs: ['mycert'],
+      },
+    })
+      .then(response => {
+        console.log(JSON.stringify(response.bodyString, null, '\t'));
+      })
+      .catch(err => {
+        console.log(`error: ${err}`);
+      });
   };
 
   return (
     <View contentInsetAdjustmentBehavior="automatic" style={styles.container}>
       <Text style={styles.header}>React Native SSL Pinning Testing</Text>
 
-      <TouchableOpacity style={styles.button} onPress={fetchData}>
+      <TouchableOpacity style={styles.button} onPress={fetchDataInValid}>
         <Text style={styles.text}>Fetch data</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={secureFetchData}>
+      <TouchableOpacity style={styles.button} onPress={fetchDataValid}>
         <Text style={styles.text}>Fetch secured data</Text>
       </TouchableOpacity>
     </View>
